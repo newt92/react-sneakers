@@ -1,6 +1,6 @@
-import Card from './components/Card'
-import Header from './components/Header'
-import Drawer from './components/Drawer'
+import Card from './components/Card';// search index.js from Card
+import Header from './components/Header';
+import Drawer from './components/Drawer';
 
 // переменная массива ид объектов
 const arr = [
@@ -34,6 +34,7 @@ function App() {
             title={obj.name} 
             price={obj.price} 
             imageUrl={obj.imageUrl} 
+            onClick={() => console.log(obj)}
           />
         ))}
       </div>

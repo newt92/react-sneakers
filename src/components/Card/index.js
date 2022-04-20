@@ -1,18 +1,21 @@
-
+import React from 'react' ;
 import styles from './Card.module.scss' ;
 
 console.log(styles);
 
 // props - card from app.js in components
 function Card(props) {
-    // const onClickButton = () => {
-    //     alert(props.title);
-    // };
+    const [isAdded, setIsAdded] = React.useState(false);// default false
+
+    const onClickPlus = () => {
+        setIsAdded(!isAdded);// after function true/ !isAdded - inversion(true to false)
+    };
+
 
     return (
         // styles.card - take styles 'card' - bam style
     <div className={styles.card}> 
-        <div className={styles.favorite}>
+        <div className={styles.favorite} onClick={props.onFavorite}>
             <img src="/img/heart-unliked.svg" alt="Unlicked"/>  
         </div>
         <img width={133} height={112} src={props.imageUrl} alt="Sneakers" />
@@ -22,9 +25,8 @@ function Card(props) {
                 <span>Цена:</span>
                 <b>{props.price} руб.</b>
             </div>
-            <button className="button" onClick={props.onClick}> {/* onClick from App.js */}
-                <img width={11} height={11} src="/img/plus.svg" alt="Plus"/>
-            </button>
+            {/* if isAdded = true, then "/img/btn-checked.svg" else "/img/btn-checked.svg" */}
+            <img className={styles.plus} onClick={onClickPlus} src={isAdded ? "/img/btn-checked.svg" : "/img/btn-plus.svg"} alt="Plus"/> 
         </div>
     </div>
     );

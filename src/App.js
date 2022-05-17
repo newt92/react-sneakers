@@ -15,6 +15,7 @@ function App() {
   const [favorites, setFavorites] = React.useState([]);
   const [searchValue, setSearchValue] = React.useState('');// search
   const [cartOpened, setCartOpened] = React.useState(false); 
+  const [isLoading, setIsLoading] = React.useState(true);//skelet
 
   // React.useEffect - for first render js create function fetch(apply serv API)
   React.useEffect(() => {
@@ -26,21 +27,46 @@ function App() {
     //     setItems(json);
     // });
 
-    axios.get('https://626135f6327d3896e276e9b1.mockapi.io/items').then((res) => {
-      setItems(res.data);
-    });
-    axios.get('https://626135f6327d3896e276e9b1.mockapi.io/cart').then((res) => {
-      setCartItems(res.data);
-    });
-    axios.get('https://626135f6327d3896e276e9b1.mockapi.io/favorites').then((res) => {
-      setFavorites(res.data);
-    });
+
+    // axios.get('https://626135f6327d3896e276e9b1.mockapi.io/items').then((res) => {
+    //   setItems(res.data);
+    // });
+    // axios.get('https://626135f6327d3896e276e9b1.mockapi.io/cart').then((res) => {
+    //   setCartItems(res.data);
+    // });
+    // axios.get('https://626135f6327d3896e276e9b1.mockapi.io/favorites').then((res) => {
+    //   setFavorites(res.data);
+    // });
+
+
+    // logic async
+    async function fetchData() {
+      setIsLoading(true);// sketet 
+      
+      const cartResponce = await axios.get('https://626135f6327d3896e276e9b1.mockapi.io/cart');
+      const favoritesResponce = await axios.get('https://626135f6327d3896e276e9b1.mockapi.io/favorites');
+      const itemsResponce = await axios.get('https://626135f6327d3896e276e9b1.mockapi.io/items');
+      
+      setIsLoading(false);
+      setCartItems(cartResponce.data);
+      setFavorites(favoritesResponce.data);
+      setItems(itemsResponce.data);
+    }
+
+    fetchData();
   }, []);// and enough
 
 
   const onAddToCart = (obj) => {
-    axios.post('https://626135f6327d3896e276e9b1.mockapi.io/cart', obj); //post - pushing
-    setCartItems((prev) => [...prev, obj]);// pushing all from previous items (cartItems) and add new obj
+    // when checked buy - show in cart, if unchecked - delete 
+    if (cartItems.find((item) => Number(item.id) === Number(obj.id))) { //Number перевод в число, так как по умолч id текст
+      axios.delete(`https://626135f6327d3896e276e9b1.mockapi.io/cart/${obj.id}`); // delete from serv
+      setCartItems((prev) => prev.filter((item) => Number(item.id) !== Number(obj.id)));// pushing all from previous items (cartItems) and add new obj/ delete from front
+    } else {
+      axios.post('https://626135f6327d3896e276e9b1.mockapi.io/cart', obj); //post - pushing 
+      setCartItems((prev) => [...prev, obj]);
+    }
+
   };
   
   const onRemoveItem = (id) => {
@@ -90,11 +116,13 @@ function App() {
       <Route path='/' element={  
         <Home 
           items={items} 
+          cartItems = {cartItems}
           searchValue={searchValue} 
           setSearchValue={setSearchValue}
           onChangeSearchInput={onChangeSearchInput}
           onAddToFavorite={onAddToFavorite}
           onAddToCart={onAddToCart}
+          isLoading={isLoading}
         />}
       />
       {/* items={Favorites} - render all items from Favorites */}

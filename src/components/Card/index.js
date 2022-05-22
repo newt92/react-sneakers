@@ -1,16 +1,19 @@
 import React from 'react' ;
 import ContentLoader from "react-content-loader";
+import AppContext from '../../context';
 import styles from './Card.module.scss';
 
 
 // props - card from app.js in components
-function Card({ id, title, imageUrl, price, onFavorite, onPlus, favorited = false, added = false, loading = false }) {
-    const [isAdded, setIsAdded] = React.useState(added);// default false
+function Card({ id, title, imageUrl, price, onFavorite, onPlus, favorited = false, loading = false }) {
+    const {isItemAdded} = React.useContext(AppContext);
     const [isFavorite, setIsFavorite] = React.useState(favorited); // вкл сердце
+
+    
 
     const onClickPlus = () => {
         onPlus({id, title, imageUrl, price}); 
-        setIsAdded(!isAdded);// make change button pluse(checked/unchecked)/after function true/ !isAdded - inversion(true to false)
+        
     };
 
     const onClickFavorite = () => {
@@ -21,9 +24,10 @@ function Card({ id, title, imageUrl, price, onFavorite, onPlus, favorited = fals
     return (
         // styles.card - take styles 'card' - bam style
     
-    // logic loading/ 
+    // logic loading/
     <div className={styles.card}> 
         {
+            // sk
             loading ? (<ContentLoader 
                 speed={2}
                 width={160}
@@ -57,7 +61,7 @@ function Card({ id, title, imageUrl, price, onFavorite, onPlus, favorited = fals
                     <img 
                         className={styles.plus} 
                         onClick={onClickPlus} 
-                        src={isAdded ? "/img/btn-checked.svg" : "/img/btn-plus.svg"} 
+                        src={isItemAdded(id) ? "/img/btn-checked.svg" : "/img/btn-plus.svg"} 
                         alt="Plus"
                     /> 
                 </div>

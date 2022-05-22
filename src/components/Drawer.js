@@ -1,5 +1,42 @@
+import React from 'react';
+import axios from 'axios'
+import Info from './Info';
+import AppContext from '../context';
+
+
+const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 function Drawer({onClose, onRemove, items = []}) {
+
+    const {cartItems, setCartItems} = React.useContext(AppContext);
+    const [orderId, setOrderId] = React.useState(null);
+    const [isOrderComplete, setIsOrderComplete] = React.useState(false);
+    const [isLoading, setIsLoading] = React.useState(false);
+
+    const onClickOrder = async () => {
+        try {
+            setIsLoading(true);
+            const {data} = await axios.post('https://626135f6327d3896e276e9b1.mockapi.io/orders', {
+                items: cartItems,
+            });
+           
+            setOrderId(data.id);
+            setIsOrderComplete(true);// first push api
+            setCartItems([]);// then delete api in state
+
+            // костыль по удалению чере 1 секунду заказы после оформления
+            for (let i = 0; i < cartItems.length; i++) {
+                const item = cartItems[i];
+                await axios.delete('https://626135f6327d3896e276e9b1.mockapi.io/cart/' + item.id);// delet cart in api
+                await delay(1000);
+            }
+        } catch (error) {
+            alert('Ошибка при создании заказа');
+        }
+        setIsLoading(false);
+    };
+   
+
     return (
         <div className="overlay">
             <div className="drawer">
@@ -9,7 +46,7 @@ function Drawer({onClose, onRemove, items = []}) {
                 {/* if kolvo items > 0 then using items else cartEmpty */}
                 {items.length > 0 ? 
                     (
-                    <div>
+                    <div className="d-flex flex-column flex">
                         <div className="items"> 
                         {items.map((obj) => (
                             <div key= {obj.id} className="cartItem d-flex align-center mb-20">
@@ -38,19 +75,14 @@ function Drawer({onClose, onRemove, items = []}) {
                                 <b>1074 руб.</b>
                             </li>
                         </ul>
-                        <button className="greenButton">Оформить заказ <img src="/img/arrow.svg" alt="Arrow"/> </button>
+                        <button disabled={isLoading} className="greenButton" onClick={onClickOrder}>Оформить заказ <img src="/img/arrow.svg" alt="Arrow"/> </button>
                         </div> 
                     </div>
                     ) : ( // else
-                    <div className="cartEmpty d-flex align-center justyfy-center flex-column flex">
-                        <img className="mb-20" width={120} height={120} src="/img/empty-cart.jpg" alt="Empty-cart"/>
-                        <h2>Корзина пустая</h2>
-                        <p className="opacity-6">Добавьте пару кроссовок, чтобы сделать заказ</p>
-                        <button className="greenButton" onClick={onClose}>
-                            <img src="/img/arrow.svg" alt="Arrow"/>
-                            Вернуться назад
-                        </button>
-                    </div>
+                    <Info 
+                        title={isOrderComplete ? "Заказ оформлен!" : "Корзина пустая"} 
+                        description={isOrderComplete ? `Ваш заказ #${orderId} скоро будет передан курьерской доставке` : "Добавьте пару кроссовок, чтобы сделать заказ" }
+                        image={isOrderComplete ? "/img/completed-order.jpg" : "/img/arrow.svg"} />
                 )}
 
                    

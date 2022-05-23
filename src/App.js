@@ -18,6 +18,10 @@ function App() {
   const [cartOpened, setCartOpened] = React.useState(false); 
   const [isLoading, setIsLoading] = React.useState(true);//skelet
 
+
+  
+
+
   // React.useEffect - for first render js create function fetch(apply serv API)
   React.useEffect(() => {
     // fetch('https://626135f6327d3896e276e9b1.mockapi.io/items')

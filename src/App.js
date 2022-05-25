@@ -7,6 +7,7 @@ import AppContext from './context';
 
 import Home from './pages/Home';
 import Favorites from './pages/Favorites';
+import Orders from './pages/Orders';
 
 
 function App() {
@@ -107,11 +108,17 @@ function App() {
 
   return (
     // value - передача компонентов, которые будут доступны везде без прокидки пропсов
-    <AppContext.Provider value={{items, cartItems, favorites, isItemAdded, setCartOpened, setCartItems}}>
+    <AppContext.Provider value={{items, cartItems, favorites, isItemAdded, onAddToFavorite, onAddToCart, setCartOpened, setCartItems}}>
         <div className="wrapper clear"> 
+
         {/* onClose - close cart */}
         {/* cartOpened && <Drawer onClose={() => setCartOpened(false)} />*/}
-        {cartOpened ? <Drawer items={cartItems} onClose={() => setCartOpened(false)} onRemove={onRemoveItem} /> : null}  
+        <Drawer 
+          items={cartItems} 
+          onClose={() => setCartOpened(false)} 
+          onRemove={onRemoveItem} 
+          opened={cartOpened}
+        />
         <Header onClickCart={() => setCartOpened(true)} /> 
         
         {/* <Home 
@@ -137,6 +144,7 @@ function App() {
           />
           {/* items={Favorites} - render all items from Favorites */}
           <Route path='/favorites' element={<Favorites items={favorites} onAddToFavorite={onAddToFavorite} />}/> 
+          <Route path='/orders' element={<Orders items={favorites} onAddToFavorite={onAddToFavorite} />}/> 
         </Routes>
         
       </div>

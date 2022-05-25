@@ -27,7 +27,7 @@ function Card({ id, title, imageUrl, price, onFavorite, onPlus, favorited = fals
     // logic loading/
     <div className={styles.card}> 
         {
-            // sk
+            // skelet
             loading ? (<ContentLoader 
                 speed={2}
                 width={160}
@@ -43,13 +43,13 @@ function Card({ id, title, imageUrl, price, onFavorite, onPlus, favorited = fals
             </ContentLoader>
             ) : (
             <>
-                <div className={styles.favorite} onClick={onFavorite}>
+                {onFavorite && <div className={styles.favorite} onClick={onFavorite}>
                     <img  
                         onClick={onClickFavorite}
                         src={isFavorite ? "/img/liked.svg" : "/img/unliked.svg"}  
                         alt="Unlicked"
                     />  
-                </div>
+                </div>}
                 <img width='100%' height={135} src={imageUrl} alt="Sneakers" />
                 <h5>{title}</h5>
                 <div className="d-flex justify-between align-center">
@@ -58,12 +58,12 @@ function Card({ id, title, imageUrl, price, onFavorite, onPlus, favorited = fals
                         <b>{price} руб.</b>
                     </div>
                     {/* if isAdded = true, then "/img/btn-checked.svg" else "/img/btn-checked.svg" */}
-                    <img 
+                    {onPlus && <img 
                         className={styles.plus} 
                         onClick={onClickPlus} 
                         src={isItemAdded(id) ? "/img/btn-checked.svg" : "/img/btn-plus.svg"} 
                         alt="Plus"
-                    /> 
+                    /> }
                 </div>
             </>
             )}

@@ -1,11 +1,13 @@
 import React from 'react';
 import axios from 'axios'
-import Info from './Info';
-import {useCart} from '../hooks/useCart'
+
+import styles from './Drawer.module.scss'
+import Info from '../Info';
+import {useCart} from '../../hooks/useCart'
 
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-function Drawer({onClose, onRemove, items = []}) {
+function Drawer({onClose, onRemove, items = [], opened}) {
     const {cartItems, setCartItems, totalPrice} = useCart();
     const [orderId, setOrderId] = React.useState(null);
     const [isOrderComplete, setIsOrderComplete] = React.useState(false);
@@ -37,8 +39,8 @@ function Drawer({onClose, onRemove, items = []}) {
    
 
     return (
-        <div className="overlay">
-            <div className="drawer">
+        <div className={`${styles.overlay} ${opened ? styles.overlayVisible : ''}`}>
+            <div className={styles.drawer}>
                 <h2 className="d-flex justify-between mb-30">
                     Корзина <img onClick={onClose} className="removeBtn" src="/img/btn-remove.svg" alt="Close"/>
                 </h2>
@@ -81,7 +83,8 @@ function Drawer({onClose, onRemove, items = []}) {
                     <Info 
                         title={isOrderComplete ? "Заказ оформлен!" : "Корзина пустая"} 
                         description={isOrderComplete ? `Ваш заказ #${orderId} скоро будет передан курьерской доставке` : "Добавьте пару кроссовок, чтобы сделать заказ" }
-                        image={isOrderComplete ? "/img/completed-order.jpg" : "/img/empty-cart.jpg"} />
+                        image={isOrderComplete ? "/img/completed-order.jpg" : "/img/empty-cart.jpg"} 
+                    />
                 )}
 
                    

@@ -20,9 +20,6 @@ function App() {
   const [isLoading, setIsLoading] = React.useState(true);//skelet
 
 
-  
-
-
   // React.useEffect - for first render js create function fetch(apply serv API)
   React.useEffect(() => {
     // fetch('https://626135f6327d3896e276e9b1.mockapi.io/items')
@@ -46,37 +43,61 @@ function App() {
     // logic async
     async function fetchData() {
       // setIsLoading(true);// sketet 
-      
-      const cartResponce = await axios.get('https://626135f6327d3896e276e9b1.mockapi.io/cart');
-      const favoritesResponce = await axios.get('https://626135f6327d3896e276e9b1.mockapi.io/favorites');
-      const itemsResponce = await axios.get('https://626135f6327d3896e276e9b1.mockapi.io/items');
-      
-      setIsLoading(false);// then skelet
 
-      setCartItems(cartResponce.data);
-      setFavorites(favoritesResponce.data);
-      setItems(itemsResponce.data);
+      try {
+        const cartResponce = await axios.get('https://626135f6327d3896e276e9b1.mockapi.io/cart');
+        const favoritesResponce = await axios.get('https://626135f6327d3896e276e9b1.mockapi.io/favorites');
+        const itemsResponce = await axios.get('https://626135f6327d3896e276e9b1.mockapi.io/items');
+        
+        setIsLoading(false);// then skelet
 
+        setCartItems(cartResponce.data);
+        setFavorites(favoritesResponce.data);
+        setItems(itemsResponce.data);
+      } catch (error) {
+        alert('Ошибка при запросе данных');
+        console.error(error);
+      }
     }
 
     fetchData();
   }, []);// and enough
 
-  const onAddToCart = (obj) => {
-    // when checked buy - show in cart, if unchecked - delete 
-    if (cartItems.find((item) => Number(item.id) === Number(obj.id))) { //Number перевод в число, так как по умолч id текст
-      axios.delete(`https://626135f6327d3896e276e9b1.mockapi.io/cart/${obj.id}`); // delete from serv
-      setCartItems((prev) => prev.filter((item) => Number(item.id) !== Number(obj.id)));// pushing all from previous items (cartItems) and add new obj/ delete from front
-    } else {
-      axios.post('https://626135f6327d3896e276e9b1.mockapi.io/cart', obj); //post - pushing 
-      setCartItems((prev) => [...prev, obj]);
+  const onAddToCart = async (obj) => {
+    try {
+      const findItem = cartItems.find((item) => Number(item.parentId) === Number(obj.id));
+      // when checked buy - show in cart, if unchecked - delete 
+      if (findItem) { //Number перевод в число, так как по умолч id текст
+        setCartItems((prev) => prev.filter((item) => Number(item.parentId) !== Number(obj.id)));// pushing all from previous items (cartItems) and add new obj/ delete from front
+        axios.delete(`https://626135f6327d3896e276e9b1.mockapi.io/cart/${findItem.id}`); // delete from serv
+      } else {
+        setCartItems((prev) => [...prev, obj]);// first fake obj(for faster adding) 
+        const {data} = await axios.post('https://626135f6327d3896e276e9b1.mockapi.io/cart', obj); //post - pushing 
+        setCartItems((prev) => prev.map(item => {
+          if (item.parentId === data.parentId) {
+            return {
+              ...item,
+              id: data.id
+            };
+          }
+          return item;
+        }));
+      }
+    } catch (error) {
+      alert('Ошибка при добавлении в корзину');
+      console.error(error);
     }
-
   };
   
   const onRemoveItem = (id) => {
-    axios.delete(`https://626135f6327d3896e276e9b1.mockapi.io/cart/${id}`); 
-    setCartItems((prev) => prev.filter((item) => item.id !== id)); 
+    try {
+      axios.delete(`https://626135f6327d3896e276e9b1.mockapi.io/cart/${id}`); 
+      setCartItems((prev) => prev.filter((item) => Number(item.id) !== Number(id))); 
+    } catch (error) {
+      alert('Ошибка при удалении из корзины');
+    }
+    
+    
 
     // setCartItems((prev) => [...prev, obj]);
   };
@@ -93,7 +114,7 @@ function App() {
         setFavorites((prev) => [...prev, data]);
       }
     } catch (error) {
-      console.log('Error');
+      console.error('Error');
     }
    
   };
@@ -103,7 +124,7 @@ function App() {
   };
 
   const isItemAdded = (id) => {
-    return cartItems.some(obj => Number(obj.id) === Number(id)); 
+    return cartItems.some((obj) => Number(obj.parentId) === Number(id)); 
   }
 
   return (

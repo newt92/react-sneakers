@@ -8,18 +8,19 @@ import styles from './Card.module.scss';
 function Card({ id, title, imageUrl, price, onFavorite, onPlus, favorited = false, loading = false }) {
     const {isItemAdded} = React.useContext(AppContext);
     const [isFavorite, setIsFavorite] = React.useState(favorited); // вкл сердце
+    const obj = {id, parentId: id, title, imageUrl, price}; // parentId - для ориентира после добавления в корзину
 
     
 
     const onClickPlus = () => {
-        onPlus({id, title, imageUrl, price}); 
+        onPlus(obj); 
         
     };
 
     const onClickFavorite = () => {
-        onFavorite({id, title, imageUrl, price});
+        onFavorite(obj);
         setIsFavorite(!isFavorite);
-    } 
+    }; 
   
     return (
         // styles.card - take styles 'card' - bam style

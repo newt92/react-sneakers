@@ -21,6 +21,7 @@ function Home({items, searchValue, setSearchValue, onChangeSearchInput, onAddToF
                 onFavorite={(obj) => onAddToFavorite(obj)}
                 onPlus={(obj) => onAddToCart(obj)} // take obj from cerd/index.js in onClickPlus
                 loading={isLoading}
+                {...item}
             />
             // <Card
             //     key={item?.id}

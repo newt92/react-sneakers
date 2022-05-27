@@ -20,7 +20,6 @@ function Drawer({onClose, onRemove, items = [], opened}) {
             const {data} = await axios.post('https://626135f6327d3896e276e9b1.mockapi.io/orders', {
                 items: cartItems,
             });
-           
             setOrderId(data.id);
             setIsOrderComplete(true);// first push api
             setCartItems([]);// then delete api in state
@@ -48,9 +47,9 @@ function Drawer({onClose, onRemove, items = [], opened}) {
                 {items.length > 0 ? 
                     (
                     <div className="d-flex flex-column flex">
-                        <div className="items"> 
+                        <div className="items flex"> 
                         {items.map((obj) => (
-                            <div key= {obj.id} className="cartItem d-flex align-center mb-20">
+                            <div key={obj.id} className="cartItem d-flex align-center mb-20">
                                 <div 
                                     style={{backgroundImage: `url(${obj.imageUrl})` }} 
                                     className="cartItemImg">
